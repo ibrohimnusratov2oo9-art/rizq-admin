@@ -20,12 +20,30 @@ function Sellers() {
     }
   };
 
+  const downloadCSV = () => {
+    const csv = sellers.map(s => 
+      `${s.id},${s.name},${s.seller_type},${s.phone},${s.address || ''},${s.products_count || 0},${s.orders_count || 0},${s.is_active ? 'Active' : 'Closed'},${s.created_at || ''}`
+    ).join('\n');
+    const header = 'ID,Название,Тип,Телефон,Адрес,Товаров,Заказов,Статус,Дата\n';
+    const blob = new Blob([header + csv], {type: 'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'rizq_sellers.csv';
+    a.click();
+  };
+
   return (
     <div>
       <h1 className="page-title">🏪 Рестораны</h1>
 
       <div className="data-table">
-        <h2>Список ресторанов ({sellers.length})</h2>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+          <h2>Список ресторанов ({sellers.length})</h2>
+          <button onClick={downloadCSV} className="btn btn-verify">
+            📥 Скачать CSV
+          </button>
+        </div>
         
         {loading ? (
           <div className="loading">⏳ Загрузка...</div>

@@ -20,12 +20,30 @@ function Products() {
     }
   };
 
+  const downloadCSV = () => {
+    const csv = products.map(p => 
+      `${p.id},${p.name},${p.price},${p.category || 'main'},${p.description || ''},${p.seller_phone},${p.is_available ? 'Available' : 'Hidden'},${p.created_at || ''}`
+    ).join('\n');
+    const header = 'ID,Название,Цена,Категория,Описание,Ресторан,Статус,Дата\n';
+    const blob = new Blob([header + csv], {type: 'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'rizq_products.csv';
+    a.click();
+  };
+
   return (
     <div>
       <h1 className="page-title">📦 Товары</h1>
 
       <div className="data-table">
-        <h2>Список товаров ({products.length})</h2>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+          <h2>Список товаров ({products.length})</h2>
+          <button onClick={downloadCSV} className="btn btn-verify">
+            📥 Скачать CSV
+          </button>
+        </div>
         
         {loading ? (
           <div className="loading">⏳ Загрузка...</div>
