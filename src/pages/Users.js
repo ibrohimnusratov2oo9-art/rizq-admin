@@ -8,6 +8,7 @@ function Users() {
 
   useEffect(() => {
     loadUsers();
+    // eslint-disable-next-line
   }, [filter]);
 
   const loadUsers = async () => {
@@ -50,6 +51,19 @@ function Users() {
     }
   };
 
+  const downloadCSV = () => {
+    const csv = users.map(u => 
+      `${u.id},${u.phone},${u.full_name || ''},${u.email || ''},${u.role},${u.is_active ? 'Active' : 'Blocked'},${u.created_at || ''}`
+    ).join('\n');
+    const header = 'ID,Телефон,Имя,Email,Роль,Статус,Дата\n';
+    const blob = new Blob([header + csv], {type: 'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'rizq_users.csv';
+    a.click();
+  };
+
   return (
     <div>
       <h1 className="page-title">👥 Пользователи</h1>
@@ -67,7 +81,12 @@ function Users() {
       </div>
 
       <div className="data-table">
-        <h2>Список пользователей ({users.length})</h2>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+          <h2>Список пользователей ({users.length})</h2>
+          <button onClick={downloadCSV} className="btn btn-verify">
+            📥 Скачать CSV
+          </button>
+        </div>
         
         {loading ? (
           <div className="loading">⏳ Загрузка...</div>

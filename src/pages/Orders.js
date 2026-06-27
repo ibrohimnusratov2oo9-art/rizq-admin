@@ -8,6 +8,7 @@ function Orders() {
 
   useEffect(() => {
     loadOrders();
+    // eslint-disable-next-line
   }, [filter]);
 
   const loadOrders = async () => {
@@ -33,6 +34,19 @@ function Orders() {
     }
   };
 
+  const downloadCSV = () => {
+    const csv = orders.map(o => 
+      `${o.code},${o.customer_phone},${o.seller_phone || ''},${o.courier || ''},${o.status},${o.distance_km || 0},${o.delivery_price || 0},${o.rizq_fee || 0},${o.courier_earn || 0},${o.created_at || ''}`
+    ).join('\n');
+    const header = 'Код,Клиент,Ресторан,Курьер,Статус,Расстояние,Цена,RIZQ Fee,Курьер$,Дата\n';
+    const blob = new Blob([header + csv], {type: 'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'rizq_orders.csv';
+    a.click();
+  };
+
   return (
     <div>
       <h1 className="page-title">📦 Заказы</h1>
@@ -54,7 +68,12 @@ function Orders() {
       </div>
 
       <div className="data-table">
-        <h2>Список заказов ({orders.length})</h2>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+          <h2>Список заказов ({orders.length})</h2>
+          <button onClick={downloadCSV} className="btn btn-verify">
+            📥 Скачать CSV
+          </button>
+        </div>
         
         {loading ? (
           <div className="loading">⏳ Загрузка...</div>
