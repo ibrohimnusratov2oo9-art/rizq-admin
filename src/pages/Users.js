@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getAllUsers, blockUser, unblockUser, verifyCourier } from '../services/api';
 
 function Users() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadUsers();
@@ -24,7 +26,8 @@ function Users() {
     }
   };
 
-  const handleBlock = async (userId) => {
+  const handleBlock = async (e, userId) => {
+    e.stopPropagation();
     try {
       await blockUser(userId);
       loadUsers();
@@ -33,7 +36,8 @@ function Users() {
     }
   };
 
-  const handleUnblock = async (userId) => {
+  const handleUnblock = async (e, userId) => {
+    e.stopPropagation();
     try {
       await unblockUser(userId);
       loadUsers();
@@ -42,7 +46,8 @@ function Users() {
     }
   };
 
-  const handleVerify = async (userId) => {
+  const handleVerify = async (e, userId) => {
+    e.stopPropagation();
     try {
       await verifyCourier(userId);
       loadUsers();
@@ -106,7 +111,7 @@ function Users() {
             </thead>
             <tbody>
               {users.map(user => (
-                <tr key={user.id}>
+                <tr key={user.id} onClick={() => navigate(`/users/${user.id}`)} style={{cursor: 'pointer'}}>
                   <td>{user.id}</td>
                   <td><strong>{user.phone}</strong></td>
                   <td>{user.full_name || '-'}</td>
@@ -128,16 +133,16 @@ function Users() {
                   <td>{user.created_at ? new Date(user.created_at).toLocaleDateString() : '-'}</td>
                   <td>
                     {user.is_active ? (
-                      <button className="btn btn-block" onClick={() => handleBlock(user.id)}>
+                      <button className="btn btn-block" onClick={(e) => handleBlock(e, user.id)}>
                         Заблокировать
                       </button>
                     ) : (
-                      <button className="btn btn-unblock" onClick={() => handleUnblock(user.id)}>
+                      <button className="btn btn-unblock" onClick={(e) => handleUnblock(e, user.id)}>
                         Разблокировать
                       </button>
                     )}
                     {user.role === 'courier' && !user.is_verified && (
-                      <button className="btn btn-verify" onClick={() => handleVerify(user.id)}>
+                      <button className="btn btn-verify" onClick={(e) => handleVerify(e, user.id)}>
                         ✅ Верифицировать
                       </button>
                     )}

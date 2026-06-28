@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
@@ -9,11 +9,21 @@ import Products from './pages/Products';
 import Bonuses from './pages/Bonuses';
 import Payouts from './pages/Payouts';
 import SearchPage from './pages/SearchPage';
+import UserDetail from './pages/UserDetail';
 import Login from './pages/Login';
 import './App.css';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [darkTheme, setDarkTheme] = useState(false);
+
+  useEffect(() => {
+    if (darkTheme) {
+      document.body.classList.add('dark-theme');
+    } else {
+      document.body.classList.remove('dark-theme');
+    }
+  }, [darkTheme]);
 
   if (!isLoggedIn) {
     return <Login onLogin={() => setIsLoggedIn(true)} />;
@@ -27,6 +37,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/users" element={<Users />} />
+            <Route path="/users/:userId" element={<UserDetail />} />
             <Route path="/sellers" element={<Sellers />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/products" element={<Products />} />
@@ -36,6 +47,13 @@ function App() {
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>
+        
+        <button 
+          className="theme-toggle"
+          onClick={() => setDarkTheme(!darkTheme)}
+        >
+          {darkTheme ? '☀️' : '🌙'}
+        </button>
       </div>
     </Router>
   );
