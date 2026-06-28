@@ -41,15 +41,17 @@ function App() {
         const res = await getNotifications();
         const data = res.data;
         
-        if (data.count > 0) {
+        if (data.count > 0 && data.count !== notifCount) {
+          // Звук ТОЛЬКО если новые уведомления!
+          if (data.count > notifCount && notifCount > 0) {
+            const hasSound = data.notifications.some(n => n.sound);
+            if (hasSound && audioRef.current) {
+              audioRef.current.play().catch(() => {});
+            }
+          }
+          
           setNotifCount(data.count);
           setNotifs(data.notifications);
-          
-          // Звук для новых заказов и пользователей
-          const hasSound = data.notifications.some(n => n.sound);
-          if (hasSound && audioRef.current) {
-            audioRef.current.play().catch(() => {});
-          }
         }
       } catch (err) {
         // ignore

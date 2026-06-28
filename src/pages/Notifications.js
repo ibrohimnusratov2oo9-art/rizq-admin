@@ -101,19 +101,25 @@ function Notifications() {
 
   const checkNewNotifications = async () => {
     try {
-      const res = await getNotifications();
-      if (res.data.count > 0 && res.data.count !== lastCountRef.current) {
-        lastCountRef.current = res.data.count;
-        
-        // Звук для новых
-        const hasSound = res.data.notifications.some(n => n.sound);
-        if (hasSound && audioRef.current) {
+      const [ordersRes, usersRes] = await Promise.all([
+        getAllOrders(),
+        getAllUsers()
+      ]);
+
+      const newTotal = ordersRes.data.length + usersRes.data.length;
+
+      // Если количество изменилось - есть новое событие!
+      if (newTotal > lastCountRef.current && lastCountRef.current > 0) {
+        // Звук ТОЛЬКО ОДИН РАЗ!
+        if (audioRef.current) {
           audioRef.current.play().catch(() => {});
         }
-        
-        // Перезагружаем все данные
+        // Перезагружаем данные
         loadAllData();
       }
+
+      lastCountRef.current = newTotal;
+
     } catch (err) {
       // ignore
     }
