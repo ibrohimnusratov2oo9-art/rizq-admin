@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, Store, ShoppingBag, Package, Gift, Wallet, Search } from 'lucide-react';
+import { LayoutDashboard, Users, Store, ShoppingBag, Package, Gift, Wallet, Search, FileText } from 'lucide-react';
 
 function Sidebar() {
   return (
@@ -51,6 +51,12 @@ function Sidebar() {
           <NavLink to="/payouts" className={({isActive}) => `sidebar-link ${isActive ? 'active' : ''}`}>
             <Wallet size={20} />
             Выплаты
+          </NavLink>
+        </li>
+        <li className="sidebar-item">
+          <NavLink to="/logs" className={({isActive}) => `sidebar-link ${isActive ? 'active' : ''}`}>
+            <FileText size={20} />
+            Логи
           </NavLink>
         </li>
         <li className="sidebar-item">
