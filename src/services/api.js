@@ -13,11 +13,15 @@ const api = axios.create({
 export const getStats = () => api.get('/admin/stats');
 export const getTodayStats = () => api.get('/admin/stats/today');
 export const getAllUsers = (role) => api.get(`/admin/users${role ? `?role=${role}` : ''}`);
+export const getUserDetail = (userId) => api.get(`/admin/users/${userId}`);
 export const getAllSellers = () => api.get('/admin/sellers');
 export const getAllProducts = () => api.get('/admin/products');
 export const getAllOrders = (status) => api.get(`/admin/orders${status ? `?status=${status}` : ''}`);
+export const getAllBonuses = () => api.get('/admin/bonuses');
+export const getAllPayouts = () => api.get('/admin/payouts');
 export const blockUser = (userId) => api.post(`/admin/users/${userId}/block`);
 export const unblockUser = (userId) => api.post(`/admin/users/${userId}/unblock`);
 export const verifyCourier = (userId) => api.post(`/admin/couriers/${userId}/verify`);
+export const resetPassword = (userId, newPassword) => api.post(`/admin/users/${userId}/reset-password?new_password=${newPassword}`);
 
 export default api;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, Store, ShoppingBag, Package } from 'lucide-react';
+import { LayoutDashboard, Users, Store, ShoppingBag, Package, Gift, Wallet, Search } from 'lucide-react';
 
 function Sidebar() {
   return (
@@ -12,7 +12,7 @@ function Sidebar() {
       
       <ul className="sidebar-menu">
         <li className="sidebar-item">
-          <NavLink to="/" className={({isActive}) => `sidebar-link ${isActive ? 'active' : ''}`}>
+          <NavLink to="/" className={({isActive}) => `sidebar-link ${isActive ? 'active' : ''}`} end>
             <LayoutDashboard size={20} />
             Dashboard
           </NavLink>
@@ -39,6 +39,24 @@ function Sidebar() {
           <NavLink to="/products" className={({isActive}) => `sidebar-link ${isActive ? 'active' : ''}`}>
             <Package size={20} />
             Товары
+          </NavLink>
+        </li>
+        <li className="sidebar-item">
+          <NavLink to="/bonuses" className={({isActive}) => `sidebar-link ${isActive ? 'active' : ''}`}>
+            <Gift size={20} />
+            Бонусы
+          </NavLink>
+        </li>
+        <li className="sidebar-item">
+          <NavLink to="/payouts" className={({isActive}) => `sidebar-link ${isActive ? 'active' : ''}`}>
+            <Wallet size={20} />
+            Выплаты
+          </NavLink>
+        </li>
+        <li className="sidebar-item">
+          <NavLink to="/search" className={({isActive}) => `sidebar-link ${isActive ? 'active' : ''}`}>
+            <Search size={20} />
+            Поиск
           </NavLink>
         </li>
       </ul>

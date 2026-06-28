@@ -6,6 +6,9 @@ import Users from './pages/Users';
 import Sellers from './pages/Sellers';
 import Orders from './pages/Orders';
 import Products from './pages/Products';
+import Bonuses from './pages/Bonuses';
+import Payouts from './pages/Payouts';
+import SearchPage from './pages/SearchPage';
 import Login from './pages/Login';
 import './App.css';
 
@@ -27,6 +30,9 @@ function App() {
             <Route path="/sellers" element={<Sellers />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/products" element={<Products />} />
+            <Route path="/bonuses" element={<Bonuses />} />
+            <Route path="/payouts" element={<Payouts />} />
+            <Route path="/search" element={<SearchPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>
