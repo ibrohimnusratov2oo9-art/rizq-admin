@@ -11,6 +11,7 @@ import Payouts from './pages/Payouts';
 import SearchPage from './pages/SearchPage';
 import UserDetail from './pages/UserDetail';
 import Logs from './pages/Logs';
+import Notifications from './pages/Notifications';
 import Login from './pages/Login';
 import { getNotifications } from './services/api';
 import './App.css';
@@ -79,6 +80,7 @@ function App() {
             <Route path="/bonuses" element={<Bonuses />} />
             <Route path="/payouts" element={<Payouts />} />
             <Route path="/logs" element={<Logs />} />
+            <Route path="/notifications" element={<Notifications />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
