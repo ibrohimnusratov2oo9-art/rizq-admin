@@ -146,6 +146,17 @@ function Users() {
                         ✅ Верифицировать
                       </button>
                     )}
+                    <button className="btn" style={{background: '#fef3c7', color: '#d97706'}} onClick={(e) => {
+  e.stopPropagation();
+  const newName = prompt('Новое имя:', user.full_name || '');
+  if (newName !== null) {
+    import('../services/api').then(({updateUser}) => {
+      updateUser(user.id, {full_name: newName}).then(() => loadUsers());
+    });
+  }
+}}>
+  ✏️
+</button>
                   </td>
                 </tr>
               ))}

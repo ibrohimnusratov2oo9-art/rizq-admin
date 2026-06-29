@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAllSellers } from '../services/api';
+import { getAllSellers, updateSeller } from '../services/api';
 
 function Sellers() {
   const [sellers, setSellers] = useState([]);
@@ -17,6 +17,42 @@ function Sellers() {
       console.error('Error:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEditName = async (e, sellerId, currentName) => {
+    e.stopPropagation();
+    const newName = prompt('Новое название:', currentName);
+    if (newName !== null) {
+      try {
+        await updateSeller(sellerId, {name: newName});
+        loadSellers();
+      } catch (err) {
+        alert('Ошибка');
+      }
+    }
+  };
+
+  const handleEditAddress = async (e, sellerId, currentAddress) => {
+    e.stopPropagation();
+    const newAddress = prompt('Новый адрес:', currentAddress || '');
+    if (newAddress !== null) {
+      try {
+        await updateSeller(sellerId, {address: newAddress});
+        loadSellers();
+      } catch (err) {
+        alert('Ошибка');
+      }
+    }
+  };
+
+  const handleToggle = async (e, sellerId, currentStatus) => {
+    e.stopPropagation();
+    try {
+      await updateSeller(sellerId, {is_active: !currentStatus});
+      loadSellers();
+    } catch (err) {
+      alert('Ошибка');
     }
   };
 
@@ -40,9 +76,7 @@ function Sellers() {
       <div className="data-table">
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
           <h2>Список ресторанов ({sellers.length})</h2>
-          <button onClick={downloadCSV} className="btn btn-verify">
-            📥 Скачать CSV
-          </button>
+          <button onClick={downloadCSV} className="btn btn-verify">📥 Скачать CSV</button>
         </div>
         
         {loading ? (
@@ -62,6 +96,7 @@ function Sellers() {
                 <th>Заказов</th>
                 <th>Статус</th>
                 <th>Дата</th>
+                <th>Действия</th>
               </tr>
             </thead>
             <tbody>
@@ -85,6 +120,13 @@ function Sellers() {
                     </span>
                   </td>
                   <td>{seller.created_at ? new Date(seller.created_at).toLocaleDateString() : '-'}</td>
+                  <td>
+                    <button className="btn" style={{background: '#dbeafe', color: '#2563eb'}} onClick={(e) => handleEditName(e, seller.id, seller.name)}>✏️ Имя</button>
+                    <button className="btn" style={{background: '#fef3c7', color: '#d97706'}} onClick={(e) => handleEditAddress(e, seller.id, seller.address)}>📍 Адрес</button>
+                    <button className="btn" style={{background: seller.is_active ? '#fee2e2' : '#d1fae5', color: seller.is_active ? '#dc2626' : '#059669'}} onClick={(e) => handleToggle(e, seller.id, seller.is_active)}>
+                      {seller.is_active ? '❌ Закрыть' : '✅ Открыть'}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
