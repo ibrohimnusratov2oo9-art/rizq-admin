@@ -4,6 +4,8 @@ import { getAllProducts, updateProduct, deleteProduct as deleteProductApi } from
 function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editProduct, setEditProduct] = useState(null);
+  const [editData, setEditData] = useState({});
 
   useEffect(() => {
     loadProducts();
@@ -20,50 +22,41 @@ function Products() {
     }
   };
 
-  const handleEditPrice = async (e, productId, currentPrice) => {
-    e.stopPropagation();
-    const newPrice = prompt('Новая цена:', currentPrice);
-    if (newPrice !== null && !isNaN(newPrice)) {
-      try {
-        await updateProduct(productId, {price: parseFloat(newPrice)});
-        loadProducts();
-      } catch (err) {
-        alert('Ошибка');
-      }
-    }
+  const openEdit = (product) => {
+    setEditProduct(product);
+    setEditData({
+      name: product.name,
+      price: product.price,
+      category: product.category || 'main',
+      description: product.description || '',
+      is_available: product.is_available
+    });
   };
 
-  const handleEditName = async (e, productId, currentName) => {
-    e.stopPropagation();
-    const newName = prompt('Новое название:', currentName);
-    if (newName !== null) {
-      try {
-        await updateProduct(productId, {name: newName});
-        loadProducts();
-      } catch (err) {
-        alert('Ошибка');
-      }
-    }
-  };
-
-  const handleToggle = async (e, productId, currentStatus) => {
-    e.stopPropagation();
+  const saveEdit = async () => {
     try {
-      await updateProduct(productId, {is_available: !currentStatus});
+      const params = {};
+      if (editData.name !== editProduct.name) params.name = editData.name;
+      if (editData.price !== editProduct.price) params.price = editData.price;
+      if (editData.is_available !== editProduct.is_available) params.is_available = editData.is_available;
+      
+      if (Object.keys(params).length > 0) {
+        await updateProduct(editProduct.id, params);
+      }
+      setEditProduct(null);
       loadProducts();
     } catch (err) {
-      alert('Ошибка');
+      alert('Ошибка сохранения');
     }
   };
 
-  const handleDelete = async (e, productId) => {
-    e.stopPropagation();
-    if (window.confirm('Удалить товар?')) {
+  const handleDelete = async (productId) => {
+    if (window.confirm('Удалить товар навсегда?')) {
       try {
         await deleteProductApi(productId);
         loadProducts();
       } catch (err) {
-        alert('Ошибка');
+        alert('Ошибка удаления');
       }
     }
   };
@@ -83,60 +76,132 @@ function Products() {
 
   return (
     <div>
-      <h1 className="page-title">📦 Товары</h1>
-
-      <div className="data-table">
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-          <h2>Список товаров ({products.length})</h2>
-          <button onClick={downloadCSV} className="btn btn-verify">📥 Скачать CSV</button>
-        </div>
-        
-        {loading ? (
-          <div className="loading">⏳ Загрузка...</div>
-        ) : products.length === 0 ? (
-          <div className="loading">Нет товаров</div>
-        ) : (
-          <table className="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Название</th>
-                <th>Цена</th>
-                <th>Категория</th>
-                <th>Ресторан</th>
-                <th>Статус</th>
-                <th>Дата</th>
-                <th>Действия</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map(product => (
-                <tr key={product.id}>
-                  <td>{product.id}</td>
-                  <td><strong>{product.name}</strong></td>
-                  <td style={{color: '#FF6B35', fontWeight: '600'}}>{product.price} с</td>
-                  <td><span className="badge badge-blue">{product.category || 'main'}</span></td>
-                  <td>{product.seller_phone}</td>
-                  <td>
-                    <span className={`badge ${product.is_available ? 'badge-green' : 'badge-red'}`}>
-                      {product.is_available ? '✅ Доступен' : '❌ Скрыт'}
-                    </span>
-                  </td>
-                  <td>{product.created_at ? new Date(product.created_at).toLocaleDateString() : '-'}</td>
-                  <td>
-                    <button className="btn" style={{background: '#dbeafe', color: '#2563eb'}} onClick={(e) => handleEditName(e, product.id, product.name)}>✏️ Имя</button>
-                    <button className="btn" style={{background: '#fef3c7', color: '#d97706'}} onClick={(e) => handleEditPrice(e, product.id, product.price)}>💰 Цена</button>
-                    <button className="btn" style={{background: product.is_available ? '#fee2e2' : '#d1fae5', color: product.is_available ? '#dc2626' : '#059669'}} onClick={(e) => handleToggle(e, product.id, product.is_available)}>
-                      {product.is_available ? '🔇 Скрыть' : '✅ Показать'}
-                    </button>
-                    <button className="btn btn-block" onClick={(e) => handleDelete(e, product.id)}>🗑️</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px'}}>
+        <h1 className="page-title" style={{marginBottom: 0}}>📦 Товары ({products.length})</h1>
+        <button onClick={downloadCSV} className="btn btn-verify">📥 Скачать CSV</button>
       </div>
+
+      {loading ? (
+        <div className="loading">⏳ Загрузка...</div>
+      ) : products.length === 0 ? (
+        <div className="loading">Нет товаров</div>
+      ) : (
+        <div className="card-grid">
+          {products.map(product => (
+            <div key={product.id} className="item-card">
+              <div className="item-card-header">
+                <div className="item-card-icon" style={{background: '#FFF7ED'}}>
+                  🍽️
+                </div>
+                <div className="item-card-info">
+                  <h3>{product.name}</h3>
+                  <p>{product.seller_phone}</p>
+                </div>
+                <span className={`badge ${product.is_available ? 'badge-green' : 'badge-red'}`}>
+                  {product.is_available ? '✅' : '❌'}
+                </span>
+              </div>
+              
+              <div className="item-card-details">
+                <div className="item-card-detail">
+                  <div className="label">💰 Цена</div>
+                  <div className="value" style={{color: '#FF6B35'}}>{product.price} с</div>
+                </div>
+                <div className="item-card-detail">
+                  <div className="label">📂 Категория</div>
+                  <div className="value">{product.category || 'main'}</div>
+                </div>
+                <div className="item-card-detail">
+                  <div className="label">📝 Описание</div>
+                  <div className="value" style={{fontSize: '12px'}}>{product.description || '-'}</div>
+                </div>
+                <div className="item-card-detail">
+                  <div className="label">📅 Добавлен</div>
+                  <div className="value" style={{fontSize: '12px'}}>{product.created_at ? new Date(product.created_at).toLocaleDateString() : '-'}</div>
+                </div>
+              </div>
+              
+              <div className="item-card-actions">
+                <button style={{background: '#dbeafe', color: '#2563eb'}} onClick={() => openEdit(product)}>
+                  ✏️ Редактировать
+                </button>
+                <button style={{background: '#fee2e2', color: '#dc2626'}} onClick={() => handleDelete(product.id)}>
+                  🗑️ Удалить
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Модальное окно редактирования */}
+      {editProduct && (
+        <div className="modal-overlay" onClick={() => setEditProduct(null)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>✏️ Редактировать товар</h2>
+              <button className="modal-close" onClick={() => setEditProduct(null)}>✕</button>
+            </div>
+            
+            <div className="modal-field">
+              <label>📝 Название</label>
+              <input 
+                type="text" 
+                value={editData.name} 
+                onChange={(e) => setEditData({...editData, name: e.target.value})}
+              />
+            </div>
+            
+            <div className="modal-field">
+              <label>💰 Цена (сомони)</label>
+              <input 
+                type="number" 
+                value={editData.price} 
+                onChange={(e) => setEditData({...editData, price: parseFloat(e.target.value)})}
+              />
+            </div>
+
+            <div className="modal-field">
+              <label>📂 Категория</label>
+              <select 
+                value={editData.category}
+                onChange={(e) => setEditData({...editData, category: e.target.value})}
+              >
+                <option value="main">🍔 Основное</option>
+                <option value="snacks">🍟 Закуски</option>
+                <option value="drinks">🥤 Напитки</option>
+                <option value="desserts">🍰 Десерты</option>
+                <option value="salads">🥗 Салаты</option>
+              </select>
+            </div>
+
+            <div className="modal-field">
+              <label>📋 Описание</label>
+              <textarea 
+                rows="3"
+                value={editData.description} 
+                onChange={(e) => setEditData({...editData, description: e.target.value})}
+              />
+            </div>
+
+            <div className="modal-field">
+              <label>✅ Статус</label>
+              <select 
+                value={editData.is_available ? 'true' : 'false'}
+                onChange={(e) => setEditData({...editData, is_available: e.target.value === 'true'})}
+              >
+                <option value="true">✅ Доступен</option>
+                <option value="false">❌ Скрыт</option>
+              </select>
+            </div>
+            
+            <div className="modal-actions">
+              <button className="modal-btn modal-btn-cancel" onClick={() => setEditProduct(null)}>Отмена</button>
+              <button className="modal-btn modal-btn-primary" onClick={saveEdit}>💾 Сохранить</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
