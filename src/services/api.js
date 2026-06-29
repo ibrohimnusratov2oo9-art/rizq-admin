@@ -17,6 +17,7 @@ export const getUserDetail = (userId) => api.get(`/admin/users/${userId}`);
 export const getAllSellers = () => api.get('/admin/sellers');
 export const getAllProducts = () => api.get('/admin/products');
 export const getAllOrders = (status) => api.get(`/admin/orders${status ? `?status=${status}` : ''}`);
+export const getOrderDetail = (orderId) => api.get(`/admin/orders/${orderId}`);
 export const getAllBonuses = () => api.get('/admin/bonuses');
 export const getAllPayouts = () => api.get('/admin/payouts');
 export const getActivityLogs = (limit) => api.get(`/admin/logs?limit=${limit || 100}`);

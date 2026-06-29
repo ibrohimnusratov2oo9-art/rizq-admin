@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getAllOrders } from '../services/api';
 
 function Orders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadOrders();
@@ -97,7 +99,7 @@ function Orders() {
             </thead>
             <tbody>
               {orders.map(order => (
-                <tr key={order.id}>
+                <tr key={order.id} onClick={() => navigate(`/orders/${order.id}`)} style={{cursor: 'pointer'}}>
                   <td><strong>#{order.code}</strong></td>
                   <td>{order.customer_phone}</td>
                   <td>{order.seller_phone || '-'}</td>

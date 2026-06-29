@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getNotifications, getAllOrders, getAllUsers } from '../services/api';
 
 function Notifications() {
   const [allNotifs, setAllNotifs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const navigate = useNavigate();
   const audioRef = useRef(null);
   const lastCountRef = useRef(0);
 
@@ -210,7 +212,14 @@ function Notifications() {
             </thead>
             <tbody>
               {filteredNotifs.map(notif => (
-                <tr key={notif.id}>
+                <tr key={notif.id} onClick={() => {
+  if (notif.type === 'new_user') {
+    navigate('/users');
+  } else if (notif.type === 'order') {
+    const orderId = notif.id.replace('order_', '');
+    navigate(`/orders/${orderId}`);
+  }
+}} style={{cursor: 'pointer'}}>
                   <td style={{fontSize: '12px', whiteSpace: 'nowrap'}}>
                     {notif.time ? new Date(notif.time).toLocaleString() : '-'}
                   </td>

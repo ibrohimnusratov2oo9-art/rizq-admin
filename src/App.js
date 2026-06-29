@@ -12,6 +12,7 @@ import SearchPage from './pages/SearchPage';
 import UserDetail from './pages/UserDetail';
 import Logs from './pages/Logs';
 import Notifications from './pages/Notifications';
+import OrderDetail from './pages/OrderDetail';
 import Login from './pages/Login';
 import { getNotifications } from './services/api';
 import './App.css';
@@ -83,6 +84,7 @@ function App() {
             <Route path="/payouts" element={<Payouts />} />
             <Route path="/logs" element={<Logs />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/orders/:orderId" element={<OrderDetail />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
